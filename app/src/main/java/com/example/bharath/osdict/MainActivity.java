@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences prefs = null;
     initDictionaryAsynTask dicTask = new initDictionaryAsynTask();
-    ProgressDialog progressDialog;
     Intent i;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -70,12 +69,18 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
         else if (prefs.getBoolean("firstrun", true)) {
-            Toast.makeText(getApplicationContext(),"First run babyyyy" ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"We are initializing our database, for only this time. Hold back we will notify you once done" ,Toast.LENGTH_LONG).show();
             prefs.edit().putBoolean("firstrun", false).commit();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Initalzing the dictionary for the first/only time...");
-            progressDialog.show();
             dicTask.execute();
+            //Creating db initialized notification....
+            Notification noti = new Notification.Builder(MainActivity.this)
+                    .setContentTitle("Initializing")
+                    .setContentText("Adding words").setSmallIcon(R.drawable.icon).build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+            notificationManager.notify(0, noti);
+            //finish();
         }
         else{
             startService(i);
@@ -156,13 +161,24 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Toast.makeText(getApplicationContext(),"Initialised.Read on.",Toast.LENGTH_LONG).show();
-                    progressDialog.cancel();
                     startService(i);
                     createNotification();
                     mLocalBroadcastManager = LocalBroadcastManager.getInstance(MainActivity.this);
                     IntentFilter mIntentFilter = new IntentFilter();
                     mIntentFilter.addAction("com.OSdict.action.close");
                     mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
+
+                    Toast.makeText(getApplicationContext(),"Doneeee babyyyy",Toast.LENGTH_SHORT).show();
+
+
+                    //Creating db initialized notification....
+                    Notification noti = new Notification.Builder(MainActivity.this)
+                            .setContentTitle("Initialized")
+                            .setContentText("Done").setSmallIcon(R.drawable.icon).build();
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+                    notificationManager.notify(0, noti);
                 }
             });
 
