@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/word"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="35sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/linearLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_row="1"
+            android:background="#FFFFFF" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/meaning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextViewaflsdhfsjlafbsdlifbsdljfbsdaljkfbdjkfbjkfajkfbsdljfbsdljfbsdjlfbjdsfbjbghsdfbhdsgfusdhfusdhfvsdhfdsuyfsdufgsduyfgsdyufgsduyfgsduyfdsufsmn.fsjdfbsljkdgbfkbgfhdgbhbffgvfgfdgjjbdfjgbdfgndvndfgdfoighdfoighsadgihfdoigndfgifdigjbfdigbdfigkfbjkfajkfbsdljfbsdljfbsdjlfbjdsfbjbghsdfbhdsgfusdhfusdhfvsdhfdsuyfsdufgsduyfgsdyufgsduyfgsduyfdsufsmn.fsjdfbsljkdgbfkbgfhdgbhbffgvfgfdgjjbdfjgbdfgndvndfgdfoighdfoighsadgihfdoigndfgifdigjbfdigbdfigkfbjkfajkfbsdljfbsdljfbsdjlfbjdsfbjbghsdfbhdsgfusdhfusdhfvsdhfdsuyfsdufgsduyfgsdyufgsduyfgsduyfdsufsmn.fsjdfbsljkdgbfkbgfhdgbhbffgvfgfdgjjbdfjgbdfgndvndfgdfoighdfoighsadgihfdoigndfgifdigjbfdigbdfig"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/c"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Close"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+
+        </ScrollView>
+
+    </LinearLayout>
+</LinearLayout>

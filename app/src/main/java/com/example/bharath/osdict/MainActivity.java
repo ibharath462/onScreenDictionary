@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
              cameFromNotification = b.getBoolean("isFromNotification");
         }
         if(cameFromNotification == true){
-            Toast.makeText(getApplicationContext(),"Service stopped" ,Toast.LENGTH_SHORT).show();
+            Intent myService = new Intent(MainActivity.this, serviceHandler.class);
+            stopService(myService);
             finish();
         }
         else if (prefs.getBoolean("firstrun", true)) {
