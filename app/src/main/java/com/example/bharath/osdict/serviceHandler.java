@@ -47,7 +47,7 @@ public class serviceHandler extends Service {
                 if(meaning != null){
                     //Toast.makeText(getApplicationContext(),"" + meaning,Toast.LENGTH_LONG).show();
                     wm=(WindowManager)getSystemService(WINDOW_SERVICE);
-                    p=new WindowManager.LayoutParams(1000,1000, WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.OPAQUE);
+                    p=new WindowManager.LayoutParams(1000,1000, WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSPARENT);
                     LayoutInflater fac=LayoutInflater.from(serviceHandler.this);
                     myView = fac.inflate(R.layout.popup, null);
                     TextView w = (TextView)myView.findViewById(R.id.word);
@@ -94,6 +94,8 @@ public class serviceHandler extends Service {
 
     public serviceHandler() {
     }
+
+    
 
 
 
