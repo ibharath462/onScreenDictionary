@@ -5,8 +5,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +42,12 @@ public class serviceHandler extends Service {
 
     ClipboardManager.OnPrimaryClipChangedListener mPrimaryClipChangedListener = new ClipboardManager.OnPrimaryClipChangedListener() {
         public void onPrimaryClipChanged() {
+//
+//            if(Build.VERSION.SDK_INT >= 23) {
+//                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                        Uri.parse("package:" + getPackageName()));
+//                startActivityForResult(intent, 1234);
+//            }
             ClipData clipData = clipBoard.getPrimaryClip();
                 ClipData.Item item = clipData.getItemAt(0);
                 String word = item.getText().toString();
@@ -46,10 +55,7 @@ public class serviceHandler extends Service {
                 String meaning = databaseHelper.getMeaning(word);
                 if(meaning != null){
                     //Toast.makeText(getApplicationContext(),"" + meaning,Toast.LENGTH_LONG).show();
-                    wm=(WindowManager)getSystemService(WINDOW_SERVICE);
-                    p=new WindowManager.LayoutParams(1000,1000, WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSPARENT);
-                    LayoutInflater fac=LayoutInflater.from(serviceHandler.this);
-                    myView = fac.inflate(R.layout.popup, null);
+
                     TextView w = (TextView)myView.findViewById(R.id.word);
                     TextView m = (TextView)myView.findViewById(R.id.meaning);
                     Button b = (Button)myView.findViewById(R.id.c);
@@ -74,6 +80,7 @@ public class serviceHandler extends Service {
     private void RegPrimaryClipChanged(){
         if(!bHasClipChangedListener){
             clipBoard.addPrimaryClipChangedListener(mPrimaryClipChangedListener);
+
             bHasClipChangedListener = true;
         }
     }
@@ -82,6 +89,10 @@ public class serviceHandler extends Service {
     public void onCreate() {
         clipBoard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         RegPrimaryClipChanged();
+        wm=(WindowManager)getSystemService(WINDOW_SERVICE);
+        p=new WindowManager.LayoutParams(1000,1000, WindowManager.LayoutParams.TYPE_PHONE,  WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSPARENT);
+        LayoutInflater fac=LayoutInflater.from(serviceHandler.this);
+        myView = fac.inflate(R.layout.popup, null);
         super.onCreate();
     }
 
@@ -95,7 +106,7 @@ public class serviceHandler extends Service {
     public serviceHandler() {
     }
 
-    
+
 
 
 

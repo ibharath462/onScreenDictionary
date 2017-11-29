@@ -11,10 +11,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -48,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+
     SharedPreferences prefs = null;
+    static Resources res;
+    static String dbPath,dbName;
     initDictionaryAsynTask dicTask = new initDictionaryAsynTask();
     Intent i;
 
@@ -57,6 +67,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        res = getResources();
+        if(Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(MainActivity.this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1234);
+            }
+        }
+
         prefs = getSharedPreferences("com.example.bharath.osdict", MODE_PRIVATE);
         boolean cameFromNotification = false;
         i = new Intent(MainActivity.this,serviceHandler.class);
@@ -71,19 +90,28 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (prefs.getBoolean("firstrun", true)) {
             Toast.makeText(getApplicationContext(),"We are initializing our database, for only this time. Hold back we will notify you once done" ,Toast.LENGTH_LONG).show();
-            prefs.edit().putBoolean("firstrun", false).commit();
-            dicTask.execute();
-            //Creating db initialized notification....
-            Notification noti = new Notification.Builder(MainActivity.this)
-                    .setContentTitle("Initializing")
-                    .setContentText("Adding words").setSmallIcon(R.drawable.icon).build();
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-            notificationManager.notify(0, noti);
+//            prefs.edit().putBoolean("firstrun", false).commit();
+//            dicTask.execute();
+//            //Creating db initialized notification....
+//            Notification noti = new Notification.Builder(MainActivity.this)
+//                    .setContentTitle("Initializing")
+//                    .setContentText("Adding words").setSmallIcon(R.drawable.icon).build();
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+//
+//            notificationManager.notify(0, noti);
             //finish();
+            //startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), 42);
+            prefs.edit().putBoolean("firstrun", false).commit();
+//            dbHelper d = new dbHelper(MainActivity.this);
+//            try {
+//                d.createDataBase();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
         else{
+            Log.v("Database22", "DOOOO");
             startService(i);
             createNotification();
             mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -94,6 +122,26 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode != RESULT_OK)
+            return;
+        else {
+            Uri treeUri = resultData.getData();
+            DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+            grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            dbPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+            dbName = "dict";
+            try {
+                copyDataBase();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void createNotification() {
@@ -184,6 +232,39 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+
+    static void copyDataBase() throws IOException{
+
+        //Open your local db as the input stream
+
+        InputStream myInput;
+        myInput = res.openRawResource(R.raw.dict);
+
+        // Path to the just created empty db
+        String outFileName = dbPath + dbName;
+        Log.v("Database22", "CopyingggMAIN.." + outFileName);
+
+        //Open the empty db as the output stream
+        OutputStream myOutput = new FileOutputStream(outFileName);
+
+        //transfer bytes from the inputfile to the outputfile
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = myInput.read(buffer))>0){
+            Log.v("Database22", "Copyingggggg" + outFileName);
+            myOutput.write(buffer, 0, length);
+            Log.v("Database22", "DOOOO" + outFileName);
+        }
+
+        //Close the streams
+        myOutput.flush();
+        myOutput.close();
+        myInput.close();
+
+        Log.v("Database22", "Doneee haiii");
+
     }
 
     @Override
